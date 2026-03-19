@@ -32,8 +32,24 @@ Jira API 연동용 서버가 같은 저장소에 포함되어 있어, `.env`만 
 | `npm run dev:all` | API + 프론트 동시 실행 |
 | `npm run build` | 프로덕션 빌드 |
 
+## Netlify 배포 시 (Environment variables)
+
+Netlify에 올리면 `/api` 요청은 Netlify Function으로 연결됩니다. **반드시** 아래 환경 변수를 넣어야 데이터가 로드됩니다.
+
+**Netlify 대시보드 → Site configuration → Environment variables → Add a variable (또는 Add environment variables)**
+
+| 변수 이름 | 값 예시 | 비고 |
+|-----------|---------|------|
+| `JIRA_BASE_URL` | `https://회사도메인.atlassian.net` | Jira 사이트 URL |
+| `JIRA_EMAIL` | `your@email.com` | Jira 로그인 이메일 |
+| `JIRA_API_TOKEN` | 발급한 API 토큰 문자열 | [Atlassian API 토큰](https://id.atlassian.com/manage-profile/security/api-tokens)에서 발급 |
+
+- 세 개 모두 **필수**입니다. 하나라도 비어 있으면 500 또는 데이터 로드 실패가 납니다.
+- 값은 **비공개**로 두세요 (Netlify에서 기본이 비공개).
+- 변수 추가/수정 후에는 **Deploys → Trigger deploy → Deploy site** 로 다시 배포해야 반영됩니다.
+
 ## 기술 스택
 
 - React 18, TypeScript, Vite
 - Chart.js (차트)
-- Node (Jira API 프록시 서버)
+- Node (로컬용 Jira API 서버) / Netlify Functions (배포용)
