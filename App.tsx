@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useBugData } from './useBugData';
 import { EpicFilter, Theme } from './types';
 import KpiCards from './KpiCards';
-import { StatusChart, PriorityChart, MonthlyChart, CompareChart } from './Charts';
+import { StatusChart, PriorityChart, MonthlyChart } from './Charts';
 import HorizontalBar from './HorizontalBar';
 import IssueList from './IssueList';
 import './App.css';
@@ -134,27 +134,23 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: 월별 + 담당자 */}
+            {/* Row 2: 월별 */}
             <div className="row3">
               <div className="card">
                 <div className="ct"><span className="dot" />월별 버그 등록 추이</div>
                 <div className="csm"><MonthlyChart issues={filtered} /></div>
               </div>
+            </div>
+
+            {/* Row 3: 담당자별 + 보고자별 (한 줄) */}
+            <div className="row2">
               <div className="card">
                 <div className="ct"><span className="dot" />담당자별 버그 수</div>
                 <HorizontalBar issues={filtered} field="assignee" fillClass="bar-a" />
               </div>
-            </div>
-
-            {/* Row 3: 보고자 + 비교 */}
-            <div className="row3">
               <div className="card">
                 <div className="ct"><span className="dot" />보고자별 버그 수</div>
                 <HorizontalBar issues={filtered} field="reporter" fillClass="bar-r" />
-              </div>
-              <div className="card">
-                <div className="ct"><span className="dot" />담당자 vs 보고자 비교</div>
-                <div className="csm"><CompareChart issues={filtered} /></div>
               </div>
             </div>
 

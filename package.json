@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev":      "npx vite",
-    "api":      "node server/index.js",
-    "dev:all":  "npx concurrently -n api,vite \"npm run api\" \"npm run dev\"",
-    "build":    "tsc && vite build",
-    "preview":  "vite preview"
+    "dev":           "npx vite",
+    "api":           "node server/index.js",
+    "dev:all":       "npx concurrently -n api,vite \"npm run api\" \"npm run dev\"",
+    "build":         "tsc && vite build",
+    "preview":       "vite preview",
+    "preview:local": "npm run build && npx concurrently -n api,preview \"npm run api\" \"vite preview\""
   },
   "dependencies": {
     "dotenv": "^16.3.1",

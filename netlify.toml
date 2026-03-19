@@ -1,14 +1,14 @@
 # Netlify 배포 설정
-# /api 요청을 Jira Function으로 연결
+# /api 요청을 각 Function으로 연결 (쿼리 파라미터는 그대로 전달됨)
 
 [[redirects]]
   from = "/api/bugs"
-  to = "/.netlify/functions/jira?endpoint=bugs"
+  to = "/.netlify/functions/bugs"
   status = 200
   force = true
 
 [[redirects]]
   from = "/api/epics"
-  to = "/.netlify/functions/jira?endpoint=epics"
+  to = "/.netlify/functions/epics"
   status = 200
   force = true

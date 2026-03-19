@@ -1,36 +1,45 @@
 # BDACS-ALL 버그 대시보드
 
 Jira 버그 이슈를 대시보드로 보여주는 React + Vite 프로젝트.  
-Jira API 연동용 서버가 같은 저장소에 포함되어 있어, `.env`만 설정하면 로컬에서 바로 사용할 수 있습니다.
+**배포 없이 로컬에서만 확인**해도 되고, 괜찮을 때만 푸시해서 Netlify에 올리면 됩니다.
 
-## 실행 방법
+---
 
-1. **의존성 설치**
+## 로컬에서 확인하기 (배포 제한 없음)
+
+수정할 때마다 Netlify에 배포하지 않아도 됩니다. **로컬에서 먼저 확인**한 뒤, 괜찮을 때만 `git push` 하세요.
+
+1. **의존성 설치** (최초 1회)
    ```bash
    npm install
    ```
 
-2. **Jira 연동 설정**  
-   `.env.example`을 복사해 `.env`를 만들고 다음 값을 채우세요.
+2. **Jira 연동 설정** (최초 1회)  
+   `.env.example`을 복사해 `.env`를 만들고 값을 채우세요.
    - `JIRA_BASE_URL` — Jira 사이트 URL (예: `https://회사도메인.atlassian.net`)
    - `JIRA_EMAIL` — Jira 로그인 이메일
    - `JIRA_API_TOKEN` — [Atlassian API 토큰](https://id.atlassian.com/manage-profile/security/api-tokens)에서 발급
 
-3. **실행**
+3. **로컬 실행**
    ```bash
    npm run dev:all
    ```
-   - API 서버(3001) + 프론트(3000)가 함께 실행됩니다.
-   - 브라우저에서 http://localhost:3000 접속.
+   - API(3001) + 프론트(3000)가 동시에 뜹니다.
+   - 브라우저에서 **http://localhost:3000** 접속해서 확인하세요.
+   - 코드 수정 시 화면이 자동으로 갱신됩니다.
 
-## 스크립트
+4. **괜찮으면 배포**
+   - 로컬에서 확인이 끝났을 때만 `git add` → `git commit` → `git push` 하면 Netlify가 배포합니다.
 
-| 명령어 | 설명 |
+### 스크립트 요약
+
+| 명령어 | 용도 |
 |--------|------|
-| `npm run dev` | 프론트만 실행 (Vite, 포트 3000) |
+| **`npm run dev:all`** | **일상 개발** — 로컬에서 API + 프론트 동시 실행 (hot reload) |
+| `npm run dev` | 프론트만 실행 (API는 따로 `npm run api` 필요) |
 | `npm run api` | Jira API 서버만 실행 (포트 3001) |
-| `npm run dev:all` | API + 프론트 동시 실행 |
-| `npm run build` | 프로덕션 빌드 |
+| `npm run build` | 프로덕션 빌드 (Netlify 배포 시 사용) |
+| `npm run preview:local` | 빌드 후 로컬에서 빌드 결과 미리 보기 (전체 동작 확인은 `dev:all` 권장) |
 
 ## Netlify 배포 시 (Environment variables)
 

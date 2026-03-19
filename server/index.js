@@ -4,8 +4,10 @@
  */
 const http = require('http');
 const url = require('url');
+const path = require('path');
 
-require('dotenv').config();
+// 프로젝트 루트의 .env 로드 (실행 경로와 무관하게 동작)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const JIRA_BASE = process.env.JIRA_BASE_URL || process.env.ATLASSIAN_URL;
 const JIRA_EMAIL = process.env.JIRA_EMAIL;
@@ -38,14 +40,16 @@ function send(res, status, data) {
 }
 
 async function handleBugs(req, res, project, maxResults) {
-  const jql = `project=${encodeURIComponent(project)} AND type=Bug ORDER BY created DESC`;
-  const fields = 'summary,status,priority,assignee,reporter,created,parent';
-  const jiraRes = await jiraFetch(
-    `/rest/api/3/search?jql=${jql}&maxResults=${maxResults || 300}&fields=${fields}`
-  );
+  const jql = `project=${project} AND type=Bug ORDER BY created DESC`;
+  const max = Number(maxResults) || 300;
+  const fieldsParam = 'summary,status,priority,assignee,reporter,created,parent';
+  const searchUrl = `/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${max}&fields=${encodeURIComponent(fieldsParam)}`;
+  const jiraRes = await jiraFetch(searchUrl);
   if (!jiraRes.ok) {
-    const err = await jiraRes.json().catch(() => ({}));
-    send(res, jiraRes.status, { error: err.errorMessages?.join?.(' ') || jiraRes.statusText });
+    const errBody = await jiraRes.json().catch(() => ({}));
+    const errMsg = errBody.errorMessages?.join?.(' ') || errBody.error || jiraRes.statusText;
+    console.error('[api] Jira bugs 응답 오류:', jiraRes.status, errMsg);
+    send(res, jiraRes.status, { error: errMsg });
     return;
   }
   const data = await jiraRes.json();
@@ -107,14 +111,25 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404);
     res.end('Not Found');
   } catch (err) {
-    console.error(err);
-    send(res, 500, { error: err.message || 'Internal Server Error' });
+    console.error('[api] 500 오류:', err.message || err);
+    if (err.stack) console.error(err.stack);
+    const msg = err.message && typeof err.message === 'string' ? err.message : 'Internal Server Error';
+    send(res, 500, { error: msg });
   }
 });
 
 server.listen(PORT, () => {
   console.log(`[bug-dashboard-api] http://localhost:${PORT}`);
-  if (!JIRA_BASE || !auth) {
-    console.warn('[bug-dashboard-api] Jira 미설정: .env에 JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN 을 넣어 주세요.');
+  if (!JIRA_BASE) {
+    console.warn('[bug-dashboard-api] .env에 JIRA_BASE_URL(또는 ATLASSIAN_URL) 이 없습니다.');
+  }
+  if (!JIRA_EMAIL) {
+    console.warn('[bug-dashboard-api] .env에 JIRA_EMAIL 이 없습니다.');
+  }
+  if (!JIRA_TOKEN) {
+    console.warn('[bug-dashboard-api] .env에 JIRA_API_TOKEN(또는 ATLASSIAN_API_TOKEN) 이 없습니다.');
+  }
+  if (JIRA_BASE && auth) {
+    console.log('[bug-dashboard-api] Jira 연동 설정됨. /api/bugs 요청 대기 중.');
   }
 });
